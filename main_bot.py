@@ -4,20 +4,23 @@ import sys
 import time
 # from http import HTTPStatus
 
-# import requests
-from dotenv import load_dotenv
-from telebot import TeleBot  # type: ignore
+import requests
+from dotenv import load_dotenv  # type: ignore
+from telebot import TeleBot, apihelper  # type: ignore
 
-from my_pet_bot import exceptions as exc
-from my_pet_bot import messages as msg
+from my_pet_bot import exceptions as exc  # type: ignore
+from my_pet_bot import messages as msg  # type: ignore
 
 load_dotenv()
+
+RETRY_PERIOD = 30
 
 CATS_API_KEY = os.getenv('CATS_API_KEY')
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 CHAT_ID_MAX = os.getenv('CHAT_ID')
 
-CAT_PIC_ENDPOINT = 'https://api.thecatapi.com/v1/images/search'
+CAT_PIC_ENDPOINT = os.getenv('CAT_PIC_ENDPOINT')
+DOG_PIC_ENDPOINT = os.getenv('DOG_PIC_ENDPOINT')
 
 
 def check_tokens():
@@ -47,14 +50,33 @@ def check_users():
     }
     for user, token in users.items():
         if not token:
-            logging.info(f'{user} is not added')
+            logging.info(f'{user} not available')
 
 
-# TODO:  do messages func
 def send_message(bot, message):
     """Send message to telegramm chat."""
-    bot.send_message(CHAT_ID_MAX, message)
-    logging.info(msg.SENDED)
+    try:
+        bot.send_message(CHAT_ID_MAX, message)
+        logging.info('sended')
+        return True
+    except (
+        apihelper.ApiException, requests.RequestException
+    ) as error:
+        logging.error(error)
+        return False
+
+
+def get_pic():
+    """Get cat or dog pic from external API."""
+    try:
+        response = requests.get(CAT_PIC_ENDPOINT)
+    except Exception as error:
+        logging.error(f'Cat request failur:{error}')
+        response = requests.get(DOG_PIC_ENDPOINT)
+
+    random_pic = response.json().get('file')
+
+    return random_pic
 
 
 # FIXME:
@@ -62,14 +84,18 @@ def main():
     """pass."""
     logging.info(msg.CHECKING_TOKENS)
     check_tokens()
+    check_users()
     logging.info(msg.END_CHECK)
 
     bot = TeleBot(TELEGRAM_BOT_TOKEN)
 
-    timestamp = int(time.time())
+    # timestamp = int(time.time())
 
-    # while True:
-    #     try:
+    send_message(bot, 'Bot is working. TEST mode')
+
+    while True:
+        bot.send_photo(CHAT_ID_MAX, get_pic())
+        time.sleep(RETRY_PERIOD)
 
 
 if __name__ == '__main__':
