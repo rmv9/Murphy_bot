@@ -1,3 +1,4 @@
+"""test mode."""
 import logging
 import os
 import sys
@@ -8,25 +9,27 @@ import requests
 from dotenv import load_dotenv  # type: ignore
 from telebot import TeleBot, apihelper  # type: ignore
 
-from my_pet_bot import exceptions as exc  # type: ignore
-from my_pet_bot import messages as msg  # type: ignore
+import exceptions as exc
+import messages as msg
 
 load_dotenv()
 
 RETRY_PERIOD = 30
 
-CATS_API_KEY = os.getenv('CATS_API_KEY')
+# CATS_API_KEY = os.getenv('CATS_API_KEY')
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-CHAT_ID_MAX = os.getenv('CHAT_ID')
+CHAT_ID_MAX = os.getenv('CHAT_ID_MAX')
 
-CAT_PIC_ENDPOINT = os.getenv('CAT_PIC_ENDPOINT')
-DOG_PIC_ENDPOINT = os.getenv('DOG_PIC_ENDPOINT')
+CAT_PIC_ENDPOINT = 'https://api.thecatapi.com/v1/images/search'
+DOG_PIC_ENDPOINT = 'https://api.thedogapi.com/v1/images/search'
 
 
+# TODO: We need to refactor this function.
+# May be we can check and tokens and users in one.
 def check_tokens():
     """Check that all necessary envs are present."""
     tokens = {
-        'CATS_API_KEY': CATS_API_KEY,
+        # 'CATS_API_KEY': CATS_API_KEY,
         'TELEGRAM_BOT_TOKEN': TELEGRAM_BOT_TOKEN,
     }
 
@@ -42,6 +45,7 @@ def check_tokens():
         raise exc.CheckTokensEnvFailure(msg.TOKEN_MISSING)
 
 
+# TODO: As i say this function need to refactoring.
 def check_users():
     """Check added users."""
     logging.info('start checking users')
@@ -53,7 +57,8 @@ def check_users():
             logging.info(f'{user} not available')
 
 
-def send_message(bot, message):
+# TODO: This func returns boolean. why.
+def send_message(bot, message) -> bool:
     """Send message to telegramm chat."""
     try:
         bot.send_message(CHAT_ID_MAX, message)
@@ -66,20 +71,20 @@ def send_message(bot, message):
         return False
 
 
+# TODO: lets think about response[0].get('url')
+# now we have json collection as dict. whith key - 'url'
+# Its may be better use url with picture directly.
 def get_pic():
     """Get cat or dog pic from external API."""
     try:
-        response = requests.get(CAT_PIC_ENDPOINT)
-    except Exception as error:
-        logging.error(f'Cat request failur:{error}')
         response = requests.get(DOG_PIC_ENDPOINT)
+    except Exception as error:
+        logging.error(f'request failur:{error}')
+    response = requests.get(DOG_PIC_ENDPOINT).json()
+    return response[0].get('url')
 
-    random_pic = response.json().get('file')
 
-    return random_pic
-
-
-# FIXME:
+# TODO: need to do something with logging.
 def main():
     """pass."""
     logging.info(msg.CHECKING_TOKENS)
@@ -87,17 +92,26 @@ def main():
     check_users()
     logging.info(msg.END_CHECK)
 
-    bot = TeleBot(TELEGRAM_BOT_TOKEN)
+    bot = TeleBot(token=TELEGRAM_BOT_TOKEN)
 
     # timestamp = int(time.time())
 
-    send_message(bot, 'Bot is working. TEST mode')
+    send_message(
+        bot,
+        (
+            'Bot is working. TEST mode\n'
+            f'Retry period is {RETRY_PERIOD} sec.'
+        )
+    )
 
     while True:
         bot.send_photo(CHAT_ID_MAX, get_pic())
+        # bot.send_message(CHAT_ID_MAX, 'this is a CAT/DOG PIC')
         time.sleep(RETRY_PERIOD)
 
 
+# TODO: Lets cut log settings out of there
+# be better do separate logg file in this directory.
 if __name__ == '__main__':
     log_format = (
         '%(asctime)s [%(levelname)s]'
