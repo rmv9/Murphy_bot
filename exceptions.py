@@ -1,4 +1,4 @@
-"Variable custom exceptions."
+"""Variable custom exceptions."""
 
 
 class CheckTokensEnvFailure(Exception):
@@ -7,3 +7,7 @@ class CheckTokensEnvFailure(Exception):
 
 class SendMessageFailure(Exception):
     """Failed to send message."""
+
+
+class SendPhotoFailure(Exception):
+    """Failed to send photo."""
