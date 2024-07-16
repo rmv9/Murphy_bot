@@ -36,4 +36,4 @@ def wake_up(message):
         reply_markup=keyboard,
     )
 
-    bot.send_photo(chat.id, func.get_pic())
+    bot.send_photo(chat.id, func.get_cat())
