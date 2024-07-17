@@ -39,7 +39,8 @@ def main():
         # Создаём объект клавиатуры:
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
         keyboard.row(  # Первая строка кнопок.
-            types.KeyboardButton('Отправь мне погоду на улице'),  # Первую кнопку в строке.
+            # Первую кнопку в строке.
+            types.KeyboardButton('Отправь мне погоду на улице'),
             types.KeyboardButton('Пришли собачку'),
         )
         keyboard.row(  # Вторая строка кнопок.
