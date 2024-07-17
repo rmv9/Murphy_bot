@@ -21,7 +21,7 @@ params = {
 }
 responses = openmeteo.weather_api(url, params=params)
 
-# Process first location. Add a for-loop for 
+# Process first location. Add a for-loop for
 # multiple locations or weather models
 response = responses[0]
 print(f"Coordinates {response.Latitude()}°N {response.Longitude()}°E")
