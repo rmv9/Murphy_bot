@@ -149,3 +149,6 @@ dmypy.json
 static/
 posts/static/
 media/
+
+# 
+.cache.sqlite
