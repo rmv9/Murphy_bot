@@ -61,6 +61,8 @@ def main():
             reply_markup=keyboard,  # Отправляем клавиатуру в сообщении бота.
         )
 
+    # TODO: need to display location in meteo requests
+    # and add degrees parameters on one-two-three hours ahead.
     @bot.message_handler(content_types=['text'])
     def react(message):
         """pass."""
@@ -78,6 +80,10 @@ def main():
                 )
             )
         elif message.text == 'Покажи параметры':
+            logging.info(
+                f'user name: {chat.first_name}'
+                f'user id: {chat.id}'
+                )
             bot.send_message(
                 chat.id,
                 text=(
