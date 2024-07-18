@@ -1,13 +1,133 @@
 """functions."""
 import requests
 import logging
+import datetime as dt
+import os
 
-from telebot import apihelper
+from dotenv import load_dotenv
+from telebot import TeleBot, types
 
-from endpoints import (
-    CAT_PIC_ENDPOINT, DOG_PIC_ENDPOINT,
-    )
+import constants as cons
+import endpoints as endp
+import messages as msg
+import meteo_full as mt
 import permissions as perm
+
+load_dotenv()
+
+bot_v1 = TeleBot(token=perm.TELEGRAM_BOT_TOKEN)
+
+now = dt.datetime.now()
+current_hour = now.time().hour
+contact_info = 'rmv.msk@mail.ru'
+
+
+# TODO: bot writing to selected user
+def direct_initialization(CHAT_ID: str):
+    """pass."""
+    chat_id = os.getenv(CHAT_ID)
+
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(
+        types.KeyboardButton('/start'),
+    )
+    bot_v1.send_message(
+        chat_id=chat_id,
+        text=(
+            'Проверь, работает ли погода на сейчас, '
+            'завтра и на 5 дней. '
+            'походи по меню в погоду и обратно '
+            'по командам снизу. '
+            'Отпишись по итогу Максу.'
+        ),
+        reply_markup=keyboard,
+    )
+
+
+def main_menu(message):
+    """pass."""
+    chat = message.chat
+    # Создаём объект клавиатуры:
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(  # Первая строка кнопок.
+        # Первую кнопку в строке.
+        types.KeyboardButton('Что ты умеешь?'),
+        types.KeyboardButton('Покажи параметры'),
+    )
+    keyboard.row(  # Вторая строка кнопок.
+        types.KeyboardButton('Пришли собачку'),
+        types.KeyboardButton('Пришли котика'),
+    )
+    keyboard.row(  # Третья строка кнопок.
+        types.KeyboardButton('/weather'),
+    )
+    bot_v1.send_message(
+        chat_id=chat.id,
+        text='Выбери, что ты хочешь узнать',
+        reply_markup=keyboard,  # Отправляем клавиатуру в сообщении бота.
+    )
+
+
+def weather_menu(message):
+    """pass."""
+    chat = message.chat
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(
+        types.KeyboardButton('Сейчас'),
+        types.KeyboardButton('Завтра'),
+    )
+    keyboard.row(
+        types.KeyboardButton('На 5 дней'),
+    )
+    keyboard.row(
+        types.KeyboardButton(
+            '/menu'
+        )
+    )
+    bot_v1.send_message(
+        chat_id=chat.id,
+        text=('Да да, погода на какое время интересует?'),
+        reply_markup=keyboard,
+    )
+
+
+# TODO: need to display location in meteo requests
+# and add degrees parameters on one-two-three days ahead.
+def react(message):
+    """pass."""
+    chat = message.chat
+    if message.text == 'Пришли котика':
+        bot_v1.send_photo(chat.id, get_cat())
+    elif message.text == 'Пришли собачку':
+        bot_v1.send_photo(chat.id, get_dog())
+    elif message.text == 'Что ты умеешь?':
+        bot_v1.send_message(
+            chat.id,
+            text=msg.INFO_SPEECH
+        )
+    elif message.text == 'Сейчас':
+        report = get_meteo()
+        bot_v1.send_message(
+            chat.id,
+            text=report
+        )
+    elif message.text == 'Покажи параметры':
+        logging.info(
+            f'user name: {chat.first_name}'
+            f'user id: {chat.id}'
+            )
+        bot_v1.send_message(
+            chat.id,
+            text=(
+                'TEST mode. v1\n'
+                f'retry period: {cons.RETRY_PERIOD} sec.\n'
+                f'retry mode: {cons.RETRY_MODE}\n\n'
+                f'your tg name: {chat.first_name}\n'
+                f'your id: {chat.id}\n\n'
+                f'owner id: {perm.CHAT_ID_MAX}\n'
+                f'contact mail: {contact_info}'
+            )
+        )
 
 
 # TODO: lets think about response[0].get('url')
@@ -16,46 +136,67 @@ import permissions as perm
 def get_cat():
     """Get cat pic from external API."""
     try:
-        response = requests.get(CAT_PIC_ENDPOINT)
+        response = requests.get(endp.CAT_PIC_ENDPOINT)
     except Exception as error:
         logging.error(f'Connection error: {error}')
-    response = requests.get(CAT_PIC_ENDPOINT).json()
+    response = requests.get(endp.CAT_PIC_ENDPOINT).json()
     return response[0].get('url')
 
 
 def get_dog():
     """Get dog pic from external API."""
     try:
-        response = requests.get(DOG_PIC_ENDPOINT)
+        response = requests.get(endp.DOG_PIC_ENDPOINT)
     except Exception as error:
         logging.error(f'Connection error: {error}')
-    response = requests.get(DOG_PIC_ENDPOINT).json()
+    response = requests.get(endp.DOG_PIC_ENDPOINT).json()
     return response[0].get('url')
 
 
-# TODO: Not boolean now.
-def send_message(bot, message):
-    """Send message to telegramm chat."""
-    try:
-        bot.send_message(perm.CHAT_ID_MAX, message)
-        logging.info('sended')
-    except (
-        apihelper.ApiException, requests.RequestException
-    ) as error:
-        logging.error(error)
-
-
-def send_photo(bot, photo):
-    """Send photo to telegramm chat."""
-    try:
-        bot.send_photo(perm.CHAT_ID_MAX, photo)
-        logging.info('sended')
-    except (
-        apihelper.ApiException, requests.RequestException
-    ) as error:
-        logging.error(error)
-
-
-def get_meteo():
+def get_meteo() -> str:
     """Get meteo data from external API."""
-    pass
+    current_temp = int(mt.current_temperature_2m)
+    current_rain = int(mt.current_rain)
+    # hyperlink = endp.HEAT_MCHS
+
+    report = 'not available'
+
+    if current_temp > 14 and current_temp <= 18:
+        report = (
+            f'{current_temp}{msg.summery_info['COLD_TEMP']}'
+            )
+    elif current_temp > 18 and current_temp < 26:
+        report = (
+            f'{current_temp}{msg.summery_info['NORMAL_TEMP']}'
+            )
+    elif current_temp in (26, 27, 28, 29, 30):
+        report = (
+            f'{current_temp}{msg.summery_info['HOT_TEMP']}'
+            )
+    elif current_temp > 30:
+        report = (
+            f'{current_temp}{msg.summery_info['VERY_HOT_TEMP']}'
+            )
+    if current_rain > 0:
+        report += msg.rain_react
+    return report
+
+
+def say_hello(message) -> str:
+    """Say hello to user."""
+    chat = message.chat
+    name = message.from_user.first_name
+
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(
+        types.KeyboardButton('/menu'),
+    )
+
+    bot_v1.send_message(
+        chat_id=chat.id,
+        text=(
+            f'Привет, {name}!\n' +
+            msg.HELLO_SPEECH
+        ),
+        reply_markup=keyboard,
+    )
