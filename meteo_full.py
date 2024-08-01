@@ -1,8 +1,10 @@
+"""meteo_API for 10 days."""
 import openmeteo_requests
 
 import requests_cache
 import pandas as pd
 from retry_requests import retry
+from datetime import datetime
 
 # Setup the Open-Meteo API client with cache and retry on error
 cache_session = requests_cache.CachedSession(
@@ -137,6 +139,43 @@ daily_data["shortwave_radiation_sum"] = daily_shortwave_radiation_sum
 daily_data["et0_fao_evapotranspiration"] = daily_et0_fao_evapotranspiration
 
 daily_dataframe = pd.DataFrame(data=daily_data)
-print(daily_dataframe)
+
+# custom points:
+current_time = (
+    datetime.fromtimestamp(current.Time()).strftime('%d-%m-%Y %H:%M')
+)
+today_date = daily_data['date'][1]
+tomorrow_date = daily_data['date'][2]
+
+# temperatures
+current_temperature = current_temperature_2m
+today_temperature_max = daily_temperature_2m_max[1]
+today_temperature_min = daily_temperature_2m_min[1]
+
+tomorrow_temperature_max = daily_temperature_2m_max[2]
+tomorrow_temperature_min = daily_temperature_2m_min[2]
+
+# showers and rain
+today_shower = daily_showers_sum[1]
+tomorrow_shower = daily_showers_sum[2]
 
 print(current_rain)
+
+print(today_date)
+
+print(current_time)
+
+print(tomorrow_date)
+
+print(
+    'сегодня день-ночь: ',
+    int(today_temperature_max), '-',
+    int(today_temperature_min)
+)
+
+print('завтра днем -', tomorrow_temperature_max)
+print('завтра ночью -', tomorrow_temperature_min)
+
+print(daily_rain_sum[1])
+print(today_shower)
+print('сейчас: ', current_temperature, '°C')
