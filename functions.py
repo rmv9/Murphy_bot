@@ -86,13 +86,13 @@ def weather_menu(message):
     )
     bot_v1.send_message(
         chat_id=chat.id,
-        text=('Да да, погода на какое время интересует?'),
+        text=('Погода на какое время интересует?'),
         reply_markup=keyboard,
     )
 
 
-# TODO: need to display location in meteo requests
-# and add degrees parameters on one-two-three days ahead.
+# TODO: location in meteo requests (? optional)
+# 5 days meteo data (priority)
 def react(message):
     """pass."""
     chat = message.chat
@@ -106,10 +106,24 @@ def react(message):
             text=msg.INFO_SPEECH
         )
     elif message.text == 'Сейчас':
-        report = get_meteo()
+        report = get_meteo(
+            mt.current_temperature,
+            None,
+            mt.today_shower
+        )
         bot_v1.send_message(
             chat.id,
-            text=report
+            text=f'Сейчас {report}'
+        )
+    elif message.text == 'Завтра':
+        report = get_meteo(
+            mt.tomorrow_temperature_max,
+            mt.tomorrow_temperature_min,
+            mt.tomorrow_shower
+        )
+        bot_v1.send_message(
+            chat.id,
+            text=f'Завтра днем {report}'
         )
     elif message.text == 'Покажи параметры':
         logging.info(
@@ -130,9 +144,9 @@ def react(message):
         )
 
 
-# TODO: lets think about response[0].get('url')
-# now we have json collection as dict. whith key - 'url'
-# Its may be better use url with picture directly.
+# TODO: think about response[0].get('url')
+# now we have json collection as dict. whith key-'url'
+# maybe better use url with picture directly
 def get_cat():
     """Get cat pic from external API."""
     try:
@@ -153,32 +167,37 @@ def get_dog():
     return response[0].get('url')
 
 
-def get_meteo() -> str:
+def get_meteo(max_temp: float, min_temp: float | None,
+              showers: float) -> str:
     """Get meteo data from external API."""
-    current_temp = int(mt.current_temperature_2m)
-    current_rain = int(mt.current_rain)
+    max_temp = int(max_temp)
+    shower_float = showers
     # hyperlink = endp.HEAT_MCHS
 
     report = 'not available'
 
-    if current_temp > 14 and current_temp <= 18:
+    if max_temp > 14 and max_temp <= 18:
         report = (
-            f'{current_temp}{msg.summery_info['COLD_TEMP']}'
+            f'{max_temp}{msg.summery_info['COLD_TEMP']}'
             )
-    elif current_temp > 18 and current_temp < 26:
+    elif max_temp > 18 and max_temp < 26:
         report = (
-            f'{current_temp}{msg.summery_info['NORMAL_TEMP']}'
+            f'{max_temp}{msg.summery_info['NORMAL_TEMP']}'
             )
-    elif current_temp in (26, 27, 28, 29, 30):
+    elif max_temp in (26, 27, 28, 29, 30):
         report = (
-            f'{current_temp}{msg.summery_info['HOT_TEMP']}'
+            f'{max_temp}{msg.summery_info['HOT_TEMP']}'
             )
-    elif current_temp > 30:
+    elif max_temp > 30:
         report = (
-            f'{current_temp}{msg.summery_info['VERY_HOT_TEMP']}'
+            f'{max_temp}{msg.summery_info['VERY_HOT_TEMP']}'
             )
-    if current_rain > 0:
-        report += msg.rain_react
+    if shower_float:
+        report += msg.optional_reacts['RAIN']
+    if min_temp:
+        report += f'\nНочью: {int(min_temp)} °C'
+    report += f'\ntest mode {mt.today_date}'
+
     return report
 
 
