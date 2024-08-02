@@ -20,6 +20,7 @@ bot_v1 = TeleBot(token=perm.TELEGRAM_BOT_TOKEN)
 now = dt.datetime.now()
 current_hour = now.time().hour
 contact_info = 'rmv.msk@mail.ru'
+afisha = 'https://www.mos.ru/afisha/'
 
 
 # TODO: bot writing to selected user
@@ -33,12 +34,26 @@ def direct_initialization(CHAT_ID: str):
     )
     bot_v1.send_message(
         chat_id=chat_id,
+        text=msg.direct_messages['STARTING_MSG'],
+        reply_markup=keyboard,
+    )
+
+
+def start_menu(message) -> str:
+    """Say hello to user."""
+    chat = message.chat
+    name = message.from_user.first_name
+
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(
+        types.KeyboardButton(msg.start_keys['MAIN_MENU']),
+    )
+
+    bot_v1.send_message(
+        chat_id=chat.id,
         text=(
-            'Проверь, работает ли погода на сейчас, '
-            'завтра и на 5 дней. '
-            'походи по меню в погоду и обратно '
-            'по командам снизу. '
-            'Отпишись по итогу Максу.'
+            f'Привет, {name}!\n' +
+            msg.HELLO_SPEECH
         ),
         reply_markup=keyboard,
     )
@@ -51,16 +66,16 @@ def main_menu(message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.row(  # Первая строка кнопок.
         # Первую кнопку в строке.
-        types.KeyboardButton('Что ты умеешь?'),
-        types.KeyboardButton('Покажи параметры'),
+        types.KeyboardButton('/info'),
+        types.KeyboardButton('/weather'),
     )
     keyboard.row(  # Вторая строка кнопок.
         types.KeyboardButton('Пришли собачку'),
         types.KeyboardButton('Пришли котика'),
     )
-    keyboard.row(  # Третья строка кнопок.
-        types.KeyboardButton('/weather'),
-    )
+    # keyboard.row(  # Третья строка кнопок.
+    #     types.KeyboardButton('/weather'),
+    # )
     bot_v1.send_message(
         chat_id=chat.id,
         text='Выбери, что ты хочешь узнать',
@@ -73,11 +88,11 @@ def weather_menu(message):
     chat = message.chat
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.row(
-        types.KeyboardButton('Сейчас'),
-        types.KeyboardButton('Завтра'),
+        types.KeyboardButton(msg.weather_keys['TODAY']),
+        types.KeyboardButton(msg.weather_keys['TOMORROW']),
     )
     keyboard.row(
-        types.KeyboardButton('На 5 дней'),
+        types.KeyboardButton(msg.weather_keys['WEEK']),
     )
     keyboard.row(
         types.KeyboardButton(
@@ -87,6 +102,24 @@ def weather_menu(message):
     bot_v1.send_message(
         chat_id=chat.id,
         text=('Погода на какое время интересует?'),
+        reply_markup=keyboard,
+    )
+
+
+def info_menu(message):
+    """pass."""
+    chat = message.chat
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(
+        types.KeyboardButton(msg.info_keys['PARAMS']),
+        types.KeyboardButton(msg.info_keys['AUTHOR']),
+    )
+    keyboard.row(
+        types.KeyboardButton('/menu'),
+    )
+    bot_v1.send_message(
+        chat_id=chat.id,
+        text='Доступны параметры работы и контакты разработчика',
         reply_markup=keyboard,
     )
 
@@ -105,27 +138,44 @@ def react(message):
             chat.id,
             text=msg.INFO_SPEECH
         )
-    elif message.text == 'Сейчас':
+    elif message.text == 'Сегодня':
         report = get_meteo(
-            mt.current_temperature,
-            None,
-            mt.today_shower
+            mt.today_temperature_max,
+            mt.today_temperature_min,
+            mt.today_shower,
+            today=True
         )
         bot_v1.send_message(
             chat.id,
-            text=f'Сейчас {report}'
+            text=f'{report}'
+        )
+        bot_v1.send_message(
+            chat.id,
+            text=f'Сейчас {int(mt.current_temperature_2m)} °C'
+        )
+        bot_v1.send_message(
+            chat.id,
+            text=f'Ветер {int(mt.current_wind_speed_10m)} м/с'
+        )
+        bot_v1.send_message(
+            chat.id,
+            text=f'Влажность {int(mt.current_relative_humidity_2m)} %'
+        )
+        bot_v1.send_message(
+            chat.id,
+            text=f'Куда можно сходить сегодня\n{afisha}'
         )
     elif message.text == 'Завтра':
         report = get_meteo(
             mt.tomorrow_temperature_max,
             mt.tomorrow_temperature_min,
-            mt.tomorrow_shower
+            mt.tomorrow_shower,
         )
         bot_v1.send_message(
             chat.id,
-            text=f'Завтра днем {report}'
+            text=f'{report}'
         )
-    elif message.text == 'Покажи параметры':
+    elif message.text == 'Параметры':
         logging.info(
             f'user name: {chat.first_name}'
             f'user id: {chat.id}'
@@ -135,12 +185,18 @@ def react(message):
             text=(
                 'TEST mode. v1\n'
                 f'retry period: {cons.RETRY_PERIOD} sec.\n'
+                f'meteo_api: True\n'
                 f'retry mode: {cons.RETRY_MODE}\n\n'
                 f'your tg name: {chat.first_name}\n'
                 f'your id: {chat.id}\n\n'
                 f'owner id: {perm.CHAT_ID_MAX}\n'
                 f'contact mail: {contact_info}'
             )
+        )
+    elif message.text == 'Автор':
+        bot_v1.send_message(
+            chat.id,
+            text=f'{msg.contact_info['TG']}',
         )
 
 
@@ -168,54 +224,37 @@ def get_dog():
 
 
 def get_meteo(max_temp: float, min_temp: float | None,
-              showers: float) -> str:
+              showers: float, today=False) -> str:
     """Get meteo data from external API."""
     max_temp = int(max_temp)
+    if min_temp:
+        min_temp = int(min_temp)
     shower_float = showers
-    # hyperlink = endp.HEAT_MCHS
 
-    report = 'not available'
-
-    if max_temp > 14 and max_temp <= 18:
-        report = (
-            f'{max_temp}{msg.summery_info['COLD_TEMP']}'
-            )
-    elif max_temp > 18 and max_temp < 26:
-        report = (
-            f'{max_temp}{msg.summery_info['NORMAL_TEMP']}'
-            )
-    elif max_temp in (26, 27, 28, 29, 30):
-        report = (
-            f'{max_temp}{msg.summery_info['HOT_TEMP']}'
-            )
-    elif max_temp > 30:
-        report = (
-            f'{max_temp}{msg.summery_info['VERY_HOT_TEMP']}'
-            )
+    report = (
+        f'{max_temp}-{min_temp} {msg.min_max_temp}'
+        )
     if shower_float:
         report += msg.optional_reacts['RAIN']
-    if min_temp:
-        report += f'\nНочью: {int(min_temp)} °C'
-    report += f'\ntest mode {mt.today_date}'
+
+    if not today:
+        return report
+
+    if max_temp > 14 and max_temp <= 18:
+        report += (
+            f'{msg.temp_react['COLD_TEMP']}'
+            )
+    elif max_temp > 18 and max_temp < 26:
+        report += (
+            f'{msg.temp_react['NORMAL_TEMP']}'
+            )
+    elif max_temp in (26, 27, 28, 29, 30):
+        report += (
+            f'{msg.temp_react['HOT_TEMP']}'
+            )
+    elif max_temp > 30:
+        report += (
+            f'{msg.temp_react['VERY_HOT_TEMP']}'
+            )
 
     return report
-
-
-def say_hello(message) -> str:
-    """Say hello to user."""
-    chat = message.chat
-    name = message.from_user.first_name
-
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.row(
-        types.KeyboardButton('/menu'),
-    )
-
-    bot_v1.send_message(
-        chat_id=chat.id,
-        text=(
-            f'Привет, {name}!\n' +
-            msg.HELLO_SPEECH
-        ),
-        reply_markup=keyboard,
-    )
