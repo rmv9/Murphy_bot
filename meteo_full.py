@@ -169,8 +169,8 @@ print(tomorrow_date)
 
 print(
     'сегодня день-ночь: ',
-    int(today_temperature_max), '-',
-    int(today_temperature_min)
+    today_temperature_max, '-',
+    today_temperature_min
 )
 
 print('завтра днем -', tomorrow_temperature_max)
