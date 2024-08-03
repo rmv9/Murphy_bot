@@ -148,16 +148,18 @@ today_date = daily_data['date'][1]
 tomorrow_date = daily_data['date'][2]
 
 # temperatures
-current_temperature = current_temperature_2m
-today_temperature_max = daily_temperature_2m_max[1]
-today_temperature_min = daily_temperature_2m_min[1]
+current_temperature = int(current_temperature_2m)
+today_temperature_max = int(daily_temperature_2m_max[1])
+today_temperature_min = int(daily_temperature_2m_min[1])
 
-tomorrow_temperature_max = daily_temperature_2m_max[2]
-tomorrow_temperature_min = daily_temperature_2m_min[2]
+tomorrow_temperature_max = int(daily_temperature_2m_max[2])
+tomorrow_temperature_min = int(daily_temperature_2m_min[2])
 
 # showers and rain
-today_shower = daily_showers_sum[1]
-tomorrow_shower = daily_showers_sum[2]
+current_precip = int(current_precipitation)
+today_precip = int(daily_precipitation_probability_max[1])
+tomorrow_precip = int(daily_precipitation_probability_max[2])
+tomorrow_precip = int(daily_precipitation_probability_max[2])
 
 print(current_rain)
 
@@ -177,5 +179,22 @@ print('завтра днем -', tomorrow_temperature_max)
 print('завтра ночью -', tomorrow_temperature_min)
 
 print(daily_rain_sum[1])
-print(today_shower)
 print('сейчас: ', current_temperature, '°C')
+
+meteo_data_td = {
+    'min_temp': today_temperature_min,
+    'max_temp': today_temperature_max,
+    'cur_precip': current_precip,
+    'precip_prob': today_precip,
+    'cur_temp': current_temperature_2m,
+    'wind': current_wind_speed_10m,
+    'humid': current_relative_humidity_2m,
+}
+
+meteo_data_tm = {
+    'min_temp': tomorrow_temperature_min,
+    'max_temp': tomorrow_temperature_max,
+    'precip_prob': tomorrow_precip,
+}
+
+print(daily_precipitation_probability_max)
