@@ -23,7 +23,6 @@ contact_info = 'rmv.msk@mail.ru'
 afisha = 'https://www.mos.ru/afisha/'
 
 
-# TODO: bot writing to selected user
 def direct_initialization(CHAT_ID: str):
     """pass."""
     chat_id = os.getenv(CHAT_ID)
@@ -110,16 +109,20 @@ def info_menu(message):
     """pass."""
     chat = message.chat
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    keyboard.row(
+        types.KeyboardButton(msg.info_keys['GUIDE'])
+    )
     keyboard.row(
         types.KeyboardButton(msg.info_keys['PARAMS']),
         types.KeyboardButton(msg.info_keys['AUTHOR']),
     )
     keyboard.row(
-        types.KeyboardButton('/menu'),
+        types.KeyboardButton(msg.start_keys['MAIN_MENU']),
     )
     bot_v1.send_message(
         chat_id=chat.id,
-        text='Доступны параметры работы и контакты разработчика',
+        text=msg.INFO_SPEECH,
         reply_markup=keyboard,
     )
 
@@ -133,47 +136,25 @@ def react(message):
         bot_v1.send_photo(chat.id, get_cat())
     elif message.text == 'Пришли собачку':
         bot_v1.send_photo(chat.id, get_dog())
-    elif message.text == 'Что ты умеешь?':
+    elif message.text == msg.info_keys['GUIDE']:
         bot_v1.send_message(
             chat.id,
-            text=msg.INFO_SPEECH
+            text=msg.direct_messages['STARTING_MSG']
         )
     elif message.text == 'Сегодня':
-        report = get_meteo(
-            mt.today_temperature_max,
-            mt.today_temperature_min,
-            mt.today_shower,
-            today=True
-        )
         bot_v1.send_message(
             chat.id,
-            text=f'{report}'
+            text=get_meteo(mt.meteo_data_td, today=True)
         )
-        bot_v1.send_message(
-            chat.id,
-            text=f'Сейчас {int(mt.current_temperature_2m)} °C'
-        )
-        bot_v1.send_message(
-            chat.id,
-            text=f'Ветер {int(mt.current_wind_speed_10m)} м/с'
-        )
-        bot_v1.send_message(
-            chat.id,
-            text=f'Влажность {int(mt.current_relative_humidity_2m)} %'
-        )
-        bot_v1.send_message(
-            chat.id,
-            text=f'Куда можно сходить сегодня\n{afisha}'
-        )
+        if mt.meteo_data_td['precip_prob'] < 40:
+            bot_v1.send_message(
+                chat.id,
+                text=f'Куда можно сходить сегодня\n{afisha}'
+            )
     elif message.text == 'Завтра':
-        report = get_meteo(
-            mt.tomorrow_temperature_max,
-            mt.tomorrow_temperature_min,
-            mt.tomorrow_shower,
-        )
         bot_v1.send_message(
             chat.id,
-            text=f'{report}'
+            text=get_meteo(mt.meteo_data_tm)
         )
     elif message.text == 'Параметры':
         logging.info(
@@ -185,7 +166,7 @@ def react(message):
             text=(
                 'TEST mode. v1\n'
                 f'retry period: {cons.RETRY_PERIOD} sec.\n'
-                f'meteo_api: True\n'
+                f'meteo_api: available\n'
                 f'retry mode: {cons.RETRY_MODE}\n\n'
                 f'your tg name: {chat.first_name}\n'
                 f'your id: {chat.id}\n\n'
@@ -223,38 +204,47 @@ def get_dog():
     return response[0].get('url')
 
 
-def get_meteo(max_temp: float, min_temp: float | None,
-              showers: float, today=False) -> str:
+def get_meteo(data: dict, today=False) -> str:
     """Get meteo data from external API."""
-    max_temp = int(max_temp)
-    if min_temp:
-        min_temp = int(min_temp)
-    shower_float = showers
-
-    report = (
-        f'{max_temp}-{min_temp} {msg.min_max_temp}'
+    min_temp, max_temp = (
+        data['min_temp'], data['max_temp']
         )
-    if shower_float:
-        report += msg.optional_reacts['RAIN']
-
+    report = (
+        f'{min_temp}-{max_temp} '
+        f'{msg.min_max_temp}'
+        )
+    if data['precip_prob']:
+        report += (
+            f'{data['precip_prob']}{msg.optional_reacts['RAIN']}'
+            )
     if not today:
         return report
+    cur_temp, wind, humid = (
+        int(data['cur_temp']),
+        int(data['wind']),
+        int(data['humid']),
+        )
+    report += (
+        f'Сечас {cur_temp} °C\n'
+        f'Ветер {wind} м/с\n'
+        f'Влажность {humid} %\n'
+        )
 
-    if max_temp > 14 and max_temp <= 18:
-        report += (
-            f'{msg.temp_react['COLD_TEMP']}'
-            )
-    elif max_temp > 18 and max_temp < 26:
-        report += (
-            f'{msg.temp_react['NORMAL_TEMP']}'
-            )
-    elif max_temp in (26, 27, 28, 29, 30):
-        report += (
-            f'{msg.temp_react['HOT_TEMP']}'
-            )
-    elif max_temp > 30:
-        report += (
-            f'{msg.temp_react['VERY_HOT_TEMP']}'
-            )
+    # if max_temp > 14 and max_temp <= 18:
+    #     report += (
+    #         f'{msg.temp_react['COLD_TEMP']}'
+    #         )
+    # elif max_temp > 18 and max_temp < 26:
+    #     report += (
+    #         f'{msg.temp_react['NORMAL_TEMP']}'
+    #         )
+    # elif max_temp in (26, 27, 28, 29, 30):
+    #     report += (
+    #         f'{msg.temp_react['HOT_TEMP']}'
+    #         )
+    # elif max_temp > 30:
+    #     report += (
+    #         f'{msg.temp_react['VERY_HOT_TEMP']}'
+    #         )
 
     return report
