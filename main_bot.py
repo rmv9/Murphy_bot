@@ -16,9 +16,9 @@ def main():
         sys.exit()
     logging.info(msg.info['END_CHECK'])
 
-    func.direct_initialization('CHAT_ID_MAX')
-    func.direct_initialization('CHAT_ID_DARYA')
-    func.direct_initialization('CHAT_ID_ALEX')
+    # func.direct_initialization('CHAT_ID_MAX')
+    # func.direct_initialization('CHAT_ID_DARYA')
+    # func.direct_initialization('CHAT_ID_ALEX')
     func.bot_v1.message_handler(commands=['start'])(func.start_menu)
     func.bot_v1.message_handler(commands=['menu'])(func.main_menu)
     func.bot_v1.message_handler(commands=['weather'])(func.weather_menu)
