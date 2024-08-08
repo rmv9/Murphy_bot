@@ -1,13 +1,13 @@
 """test mode."""
-import logging
 import sys
 import os
 
 from dotenv import load_dotenv
 
 import core.functions as func
-import helpers.messages as msg
+import core.logging as log
 import core.permissions as perm
+import helpers.messages as msg
 
 load_dotenv()
 
@@ -24,49 +24,38 @@ afisha_list = ['mos_afisha', 'cinema_balt', 'cinema_otrada']
 # TODO: need to do something with logging.
 def main():
     """pass."""
-    logging.info(msg.info['CHECKING_TOKENS'])
+    log.logging.info(msg.info['CHECKING_TOKENS'])
     if perm.check_tokens():
-        logging.info(f'Corrupted tokens: {perm.check_tokens()}')
+        log.logging.critical(f'Corrupted tokens: {perm.check_tokens()}')
         sys.exit()
-    logging.info(msg.info['END_CHECK'])
-    # func.direct_initialization(CHAT_ID_DARYA)
-    # func.direct_initialization(CHAT_ID_MAX)
-    # func.direct_initialization(CHAT_ID_ALEX)
+    log.logging.info(msg.info['END_CHECK'])
+    # func.direct_initializator(CHAT_ID_DARYA)
+    # func.direct_initializator(CHAT_ID_MAX)
+    # func.direct_initializator(CHAT_ID_ALEX)
 
     func.bot_v1.message_handler(commands=['start'])(func.init_cmd)
     func.bot_v1.callback_query_handler(
-        func=lambda call: call.data == 'start')(func.start_menu)
+        lambda call: call.data == 'start')(func.start.menu)
     func.bot_v1.callback_query_handler(
-        func=lambda call: call.data == 'pictures')(func.pics_menu)
+        lambda call: call.data == 'pictures')(func.pics.menu)
     func.bot_v1.callback_query_handler(
-        func=lambda call: call.data == 'afisha')(func.afisha_menu)
+        lambda call: call.data == 'afisha')(func.afisha.menu)
     func.bot_v1.callback_query_handler(
-        func=lambda call: call.data == 'weather')(func.weather_menu)
+        lambda call: call.data == 'weather')(func.weather.menu)
     func.bot_v1.callback_query_handler(
-        func=lambda call: call.data == 'info')(func.info_menu)
+        lambda call: call.data == 'info')(func.info)
     func.bot_v1.callback_query_handler(
-        func=lambda call: call.data in weather_list)(func.weather_react)
+        lambda call: call.data in weather_list)(func.weather_react)
     func.bot_v1.callback_query_handler(
-        func=lambda call: call.data in pic_list)(func.picture_react)
+        lambda call: call.data in pic_list)(func.picture_react)
     func.bot_v1.callback_query_handler(
-        func=lambda call: call.data in info_list)(func.info_react)
+        lambda call: call.data in info_list)(func.info_react)
     func.bot_v1.callback_query_handler(
-        func=lambda call: call.data in afisha_list)(func.afisha_react)
+        lambda call: call.data in afisha_list)(func.afisha_react)
 
 
 # TODO: Lets cut log settings out of there
-# be better do separate logg file in this directory.
+# be better do separate logg file in core directory.
 if __name__ == '__main__':
-
-    log_format = (
-        '%(asctime)s [%(levelname)s]'
-        '(%(filename)s).%(funcName)s:%(lineno)d - %(message)s'
-    )
-    logging.basicConfig(
-        format=log_format,
-        level=logging.DEBUG,
-        handlers=[logging.StreamHandler(sys.stdout)],
-    )
-
     main()
     func.bot_v1.polling()

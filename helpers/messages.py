@@ -26,7 +26,7 @@ info = {
     'API_REQUEST': 'Запрос к API',
     'CHECK_RESPONSE': 'Проверка соответствия ответа',
     'STARTING': 'Начало работы',
-    'END_CHECK': 'Завершение проверки',
+    'END_CHECK': 'ОК',
     'PARSING': 'Начало парсинга',
     'END_PARSE': 'Завершение парсинга',
     'CHECKING_TOKENS': 'Проверка токенов',
