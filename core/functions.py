@@ -8,6 +8,7 @@ from telebot import TeleBot
 import helpers.constants as cons
 import helpers.endpoints as endp
 import helpers.hyperlinks as link
+import core.logging as log
 import core.keyboards as kb
 import helpers.messages as msg
 import api.meteo_api as mt
@@ -37,8 +38,38 @@ param_text = (
 )
 
 
-# FIXME:
-def direct_initialization(chat_id):
+# TODO: rebouild in OOP
+class BaseMenu:
+    """Base menu class."""
+
+    def __init__(self, keyboard, text, log=True) -> None:
+        """pass."""
+        self.keyboard = keyboard
+        self.text = text
+        self.log = log
+
+    def menu(self, call):
+        """pass."""
+        chat = call.message.chat
+        if self.log:
+            log.logging.info(
+                f'{call.data}/'
+                f'{call.from_user.first_name}/'
+                f'{chat.id}/'
+            )
+        bot_v1.send_message(
+            chat_id=chat.id,
+            text=self.text,
+            reply_markup=self.keyboard,
+        )
+
+
+class BaseReact:
+    """Base react class."""
+
+
+# TODO:
+def direct_initializator(chat_id) -> bool:
     """pass."""
     keyboard = kb.menu_set['init_cmd']
 
@@ -63,65 +94,31 @@ def init_cmd(message):
     )
 
 
-def start_menu(call):
-    """Say hello to user."""
-    chat = call.message.chat
-    keyboard = kb.menu_set['start_menu']
+start = BaseMenu(
+    kb.menu_set['start_menu'],
+    msg.START_GUIDE
+)
 
-    bot_v1.send_message(
-        chat_id=chat.id,
-        text=msg.START_GUIDE,
-        reply_markup=keyboard,
-    )
+pics = BaseMenu(
+    kb.menu_set['pics_menu'],
+    '1000 картинок котов или собак'
+)
 
+afisha = BaseMenu(
+    kb.menu_set['afisha_menu'],
+    'интересует афиша?'
+)
 
-def pics_menu(call):
-    """pass."""
-    chat = call.message.chat
-    keyboard = kb.menu_set['pics_menu']
-
-    bot_v1.send_message(
-        chat_id=chat.id,
-        text='1000 картинок котов или собак, к твоим услугам)',
-        reply_markup=keyboard,
-    )
+weather = BaseMenu(
+    kb.menu_set['weather_menu'],
+    'погода на какое время интересует?'
+)
 
 
-def afisha_menu(call):
-    """pass."""
-    message = call.message
-    chat = message.chat
-    keyboard = kb.menu_set['afisha_menu']
-    bot_v1.send_message(
-        chat_id=chat.id,
-        text=('интересует афиша?'),
-        reply_markup=keyboard,
-    )
-
-
-def weather_menu(call):
-    """pass."""
-    chat = call.message.chat
-    keyboard = kb.menu_set['weather_menu']
-
-    bot_v1.send_message(
-        chat_id=chat.id,
-        text=('Погода на какое время интересует?'),
-        reply_markup=keyboard,
-    )
-
-
-def info_menu(call):
-    """pass."""
-    message = call.message
-    chat = message.chat
-    keyboard = kb.menu_set['info_menu']
-
-    bot_v1.send_message(
-        chat_id=chat.id,
-        text=msg.INFO_SPEECH,
-        reply_markup=keyboard,
-    )
+info = BaseMenu(
+    kb.menu_set['info_menu'],
+    msg.INFO_SPEECH
+)
 
 
 def info_react(call):
