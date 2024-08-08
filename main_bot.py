@@ -43,7 +43,7 @@ def main():
     func.bot_v1.callback_query_handler(
         lambda call: call.data == 'weather')(func.weather.menu)
     func.bot_v1.callback_query_handler(
-        lambda call: call.data == 'info')(func.info)
+        lambda call: call.data == 'info')(func.info.menu)
     func.bot_v1.callback_query_handler(
         lambda call: call.data in weather_list)(func.weather_react)
     func.bot_v1.callback_query_handler(
