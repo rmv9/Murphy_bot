@@ -38,8 +38,34 @@ param_text = (
 )
 
 
-# TODO: rebouild in OOP
-class BaseMenu:
+class BaseObject:
+    """Base object."""
+
+
+# FIXME: fix
+class Initializator(BaseObject):
+    """Base initializator class."""
+
+    def __init__(self, keyboard, log=True):
+        """pass."""
+        self.keyboard = keyboard
+        self.log = log
+
+    def direct(self, id_data: list):
+        """pass."""
+        chat_id, *_ = id_data
+
+        if self.log:
+            log.logging.info(f'sended to: {chat_id}')
+        bot_v1.send_message(
+            chat_id=chat_id,
+            text=msg.direct_messages['TEST'],
+            reply_markup=kb.menu_set['init_cmd'],
+        )
+
+
+# TODO: rebuild with OOP
+class Menu(BaseObject):
     """Base menu class."""
 
     def __init__(self, keyboard, text, log=True) -> None:
@@ -64,7 +90,8 @@ class BaseMenu:
         )
 
 
-class BaseReact:
+# TODO:
+class React(BaseObject):
     """Base react class."""
 
 
@@ -94,33 +121,29 @@ def init_cmd(message):
     )
 
 
-start = BaseMenu(
+start = Menu(
     kb.menu_set['start_menu'],
     msg.START_GUIDE
 )
-
-pics = BaseMenu(
+pics = Menu(
     kb.menu_set['pics_menu'],
     '1000 картинок котов или собак'
 )
-
-afisha = BaseMenu(
+afisha = Menu(
     kb.menu_set['afisha_menu'],
     'интересует афиша?'
 )
-
-weather = BaseMenu(
+weather = Menu(
     kb.menu_set['weather_menu'],
     'погода на какое время интересует?'
 )
-
-
-info = BaseMenu(
+info = Menu(
     kb.menu_set['info_menu'],
     msg.INFO_SPEECH
 )
 
 
+# TODO: rebuid reacts with oop
 def info_react(call):
     """pass."""
     chat = call.message.chat
@@ -160,7 +183,7 @@ def weather_react(call):
     )
 
 
-# TODO: think about response[0].get('url')
+# TODO: what about response[0].get('url')
 # now we have json collection as dict. whith key-'url'
 # maybe better use url with picture directly
 def picture_react(call):
