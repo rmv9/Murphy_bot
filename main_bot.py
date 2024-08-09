@@ -21,7 +21,8 @@ info_list = ['functions', 'params', 'author']
 afisha_list = ['mos_afisha', 'cinema_balt', 'cinema_otrada']
 
 
-# TODO: need to do something with logging.
+# TODO: need to do something with logging in main.
+# mb replace to classes
 def main():
     """pass."""
     log.logging.info(msg.info['CHECKING_TOKENS'])
