@@ -11,7 +11,7 @@ import helpers.hyperlinks as link
 import core.logging as log
 import core.keyboards as kb
 import helpers.messages as msg
-import api.meteo_api as mt
+import api_source.meteo_api as mt
 import core.permissions as perm
 
 load_dotenv()
