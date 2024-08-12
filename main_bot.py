@@ -11,9 +11,11 @@ import helpers.messages as msg
 
 load_dotenv()
 
-CHAT_ID_DARYA = os.getenv('CHAT_ID_DARYA')
-CHAT_ID_MAX = os.getenv('CHAT_ID_MAX')
-CHAT_ID_ALEX = os.getenv('CHAT_ID_ALEX')
+data_id = {
+    'darya': os.getenv('CHAT_ID_DARYA'),
+    'max': os.getenv('CHAT_ID_MAX'),
+    'alex': os.getenv('CHAT_ID_ALEX')
+}
 
 weather_list = ['today', 'tomorrow']
 pic_list = ['cat', 'dog']
