@@ -13,7 +13,7 @@ init_cmd_keyboard.row(
     ),
 )
 
-# start menu
+# start menu and other
 start_menu_keyboard = types.InlineKeyboardMarkup()
 start_menu_keyboard.row(
     types.InlineKeyboardButton(
