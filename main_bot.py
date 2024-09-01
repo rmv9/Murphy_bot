@@ -23,15 +23,19 @@ info_list = ['functions', 'params', 'author']
 afisha_list = ['mos_afisha', 'cinema_balt', 'cinema_otrada']
 
 
-# TODO: need to do something with logging in main.
-# mb replace to classes
-def main():
+# TODO: replace logging
+def check_tokens():
     """pass."""
     log.logging.info(msg.info['CHECKING_TOKENS'])
     if perm.check_tokens():
         log.logging.critical(f'Corrupted tokens: {perm.check_tokens()}')
         sys.exit()
     log.logging.info(msg.info['END_CHECK'])
+
+
+def main():
+    """pass."""
+    check_tokens()
     # func.direct_initializator(CHAT_ID_DARYA)
     # func.direct_initializator(CHAT_ID_MAX)
     # func.direct_initializator(CHAT_ID_ALEX)
