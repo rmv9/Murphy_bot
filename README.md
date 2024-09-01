@@ -49,7 +49,7 @@ python main_bot.py
 ```
 
 ## Пример работы:
-<img src="https://i.postimg.cc/jSGFGFnd/Screenshot-2024-09-01-12-48-37-823-org-telegram-messenger-edit.jpg" height="30">
+<img src="https://i.postimg.cc/jSGFGFnd/Screenshot-2024-09-01-12-48-37-823-org-telegram-messenger-edit.jpg" height="120">
 <img src=""/>
 <img src=""/>
 <img src=""/>
