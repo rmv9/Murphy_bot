@@ -49,7 +49,7 @@ python main_bot.py
 ```
 
 ## Пример работы:
-<img src="https://photos.fife.usercontent.google.com/pw/AP1GczOhTAHwmw9SgSmBHmNrGreJrrTybg6JcN2YWpFOotZzeBuhP7Z1XMugpQ=w470-h944-s-no-gm?authuser=0">
+<img src="https://postimg.cc/FYVpSGx2">
 <img src=""/>
 <img src=""/>
 <img src=""/>
