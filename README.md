@@ -39,7 +39,7 @@ pip install setuptools
 pip install requirements_meteo.txt
 ```
 
-Используйте .env для хранения токенов:
+Используйте .env для хранения токенов:  
 <img src="https://i.postimg.cc/PxXn9rw7/2024-09-01-125132.png" height="230">
 
 Запустить проект:
@@ -52,7 +52,7 @@ python main_bot.py
 Запуск  
 <img src="https://i.postimg.cc/jSGFGFnd/Screenshot-2024-09-01-12-48-37-823-org-telegram-messenger-edit.jpg" height="500">
 Меню  
-<img src="https://i.postimg.cc/rpxPcN5G/Screenshot-2024-09-01-12-54-08-088-org-telegram-messenger.jpg" height="500">
+<img src="https://i.postimg.cc/rpxPcN5G/Screenshot-2024-09-01-12-54-08-088-org-telegram-messenger.jpg" height="500">  
 <img src="https://i.postimg.cc/4xK02gdS/Screenshot-2024-09-01-12-54-34-379-org-telegram-messenger.jpg" height="500">
 
 
