@@ -40,7 +40,7 @@ pip install requirements_meteo.txt
 ```
 
 Используйте .env для хранения токенов:
-<img src="https://i.postimg.cc/PxXn9rw7/2024-09-01-125132.png" height="300">
+<img src="https://i.postimg.cc/PxXn9rw7/2024-09-01-125132.png" height="230">
 
 Запустить проект:
 
