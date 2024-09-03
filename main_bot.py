@@ -23,12 +23,13 @@ info_list = ['functions', 'params', 'author']
 afisha_list = ['mos_afisha', 'cinema_balt', 'cinema_otrada']
 
 
-# TODO: replace logging
 def check_tokens():
     """pass."""
     log.logging.info(msg.info['CHECKING_TOKENS'])
     if perm.check_tokens():
-        log.logging.critical(f'Corrupted tokens: {perm.check_tokens()}')
+        log.logging.critical(
+            f'Corrupted tokens: {perm.check_tokens()}'
+        )
         sys.exit()
     log.logging.info(msg.info['END_CHECK'])
 
@@ -61,8 +62,6 @@ def main():
         lambda call: call.data in afisha_list)(func.afisha_react)
 
 
-# TODO: Lets cut log settings out of there
-# be better do separate logg file in core directory.
 if __name__ == '__main__':
     main()
     func.bot_v1.polling()

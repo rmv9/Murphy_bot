@@ -170,7 +170,9 @@ def weather_react(call):
 
     weather_data = {
         'today': get_weather(mt.meteo_data_td),
-        'tomorrow': get_weather(mt.meteo_data_tm, today=False),
+        'tomorrow': get_weather(
+            mt.meteo_data_tm, today=False
+        ),
     }
     report = weather_data[call.data]
     # if ((today_precip <= ALLOW_PRECIP)
@@ -229,15 +231,20 @@ def get_weather(data: dict, today=True) -> str:
         data['min_temp'], data['max_temp']
     )
     report = (
-        f'{min_temp}-{max_temp} '
-        f'{msg.min_max_temp} '
-        f'{data['precip_prob']}{msg.optional_reacts['RAIN']}'
+        f'{min_temp} - {max_temp} '
+        f'{msg.min_max_temp}\n'
+        f'{msg.wind_react['WIND']} {data['wind_direct']}, '
+        f'{int(data['wind'])} {msg.wind_react['SPEED']}\n'
+        f'{data['precip_prob']}{msg.opt_react['RAIN']}\n'
     )
     if not today:
         return report
+
     report += (
-        f'Сечас {int(data['cur_temp'])} °C\n'
-        f'Ветер {int(data['wind'])} м/с\n'
+        f'\nСечас:\n'
+        f'{int(data['cur_temp'])} °C\n'
+        f'current time: {data['time']}\n'
+        f'Ветер {data["wind_direct"]}, {int(data['wind'])} м/с\n'
         f'Влажность {int(data['humid'])} %\n'
         )
 
