@@ -25,6 +25,7 @@ url = "https://api.open-meteo.com/v1/forecast"
 params = {
     "latitude": 55.7522,
     "longitude": 37.6156,
+    "wind_speed_unit": "ms",
     "current": [
         "temperature_2m", "relative_humidity_2m",
         "apparent_temperature", "is_day", "precipitation",
@@ -48,10 +49,10 @@ responses = openmeteo.weather_api(url, params=params)
 # Process first location. Add a for-loop for
 # multiple locations or weather models
 response = responses[0]
-print(f"Coordinates {response.Latitude()}°N {response.Longitude()}°E")
-print(f"Elevation {response.Elevation()} m asl")
-print(f"Timezone {response.Timezone()} {response.TimezoneAbbreviation()}")
-print(f"Timezone difference to GMT+0 {response.UtcOffsetSeconds()} s")
+# print(f"Coordinates {response.Latitude()}°N {response.Longitude()}°E")
+# print(f"Elevation {response.Elevation()} m asl")
+# print(f"Timezone {response.Timezone()} {response.TimezoneAbbreviation()}")
+# print(f"Timezone difference to GMT+0 {response.UtcOffsetSeconds()} s")
 
 # Current values. The order of variables needs
 # to be the same as requested.
@@ -68,18 +69,18 @@ current_wind_speed_10m = current.Variables(8).Value()
 current_wind_direction_10m = current.Variables(9).Value()
 current_wind_gusts_10m = current.Variables(10).Value()
 
-print(f"Current time {current.Time()}")
-print(f"Current temperature_2m {current_temperature_2m}")
-print(f"Current relative_humidity_2m {current_relative_humidity_2m}")
-print(f"Current apparent_temperature {current_apparent_temperature}")
-print(f"Current is_day {current_is_day}")
-print(f"Current precipitation {current_precipitation}")
-print(f"Current rain {current_rain}")
-print(f"Current showers {current_showers}")
-print(f"Current snowfall {current_snowfall}")
-print(f"Current wind_speed_10m {current_wind_speed_10m}")
-print(f"Current wind_direction_10m {current_wind_direction_10m}")
-print(f"Current wind_gusts_10m {current_wind_gusts_10m}")
+# print(f"Current time {current.Time()}")
+# print(f"Current temperature_2m {current_temperature_2m}")
+# print(f"Current relative_humidity_2m {current_relative_humidity_2m}")
+# print(f"Current apparent_temperature {current_apparent_temperature}")
+# print(f"Current is_day {current_is_day}")
+# print(f"Current precipitation {current_precipitation}")
+# print(f"Current rain {current_rain}")
+# print(f"Current showers {current_showers}")
+# print(f"Current snowfall {current_snowfall}")
+# print(f"Current wind_speed_10m {current_wind_speed_10m}")
+# print(f"Current wind_direction_10m {current_wind_direction_10m}")
+# print(f"Current wind_gusts_10m {current_wind_gusts_10m}")
 
 # Process daily data. The order of variables
 # needs to be the same as requested.
@@ -140,6 +141,24 @@ daily_data["et0_fao_evapotranspiration"] = daily_et0_fao_evapotranspiration
 
 daily_dataframe = pd.DataFrame(data=daily_data)
 
+
+# custom functions:
+def get_wind_direction(degrees):
+    """Pass."""
+    winddirections = (
+        'северный',
+        'северо-восточный',
+        'восточный',
+        'юго-восточный',
+        'южный',
+        'юго-западный',
+        'западный',
+        'северо-западный'
+    )
+    index = int((degrees + 22.5) // 45 % 8)
+    return winddirections[index]
+
+
 # custom points:
 current_time = (
     datetime.fromtimestamp(current.Time()).strftime('%d-%m-%Y %H:%M')
@@ -161,25 +180,25 @@ today_precip = int(daily_precipitation_probability_max[1])
 tomorrow_precip = int(daily_precipitation_probability_max[2])
 tomorrow_precip = int(daily_precipitation_probability_max[2])
 
-print(current_rain)
+# print(current_rain)
 
-print(today_date)
+# print(today_date)
 
-print(current_time)
+# print(current_time)
 
-print(tomorrow_date)
+# print(tomorrow_date)
 
-print(
-    'сегодня день-ночь: ',
-    today_temperature_max, '-',
-    today_temperature_min
-)
+# print(
+#     'сегодня день-ночь: ',
+#     today_temperature_max, '-',
+#     today_temperature_min
+# )
 
-print('завтра днем -', tomorrow_temperature_max)
-print('завтра ночью -', tomorrow_temperature_min)
+# print('завтра днем -', tomorrow_temperature_max)
+# print('завтра ночью -', tomorrow_temperature_min)
 
-print(daily_rain_sum[1])
-print('сейчас: ', current_temperature, '°C')
+# print(daily_rain_sum[1])
+# print('сейчас: ', current_temperature, '°C')
 
 meteo_data_td = {
     'min_temp': today_temperature_min,
@@ -188,6 +207,7 @@ meteo_data_td = {
     'precip_prob': today_precip,
     'cur_temp': current_temperature_2m,
     'wind': current_wind_speed_10m,
+    'wind_direct': get_wind_direction(current_wind_direction_10m),
     'humid': current_relative_humidity_2m,
 }
 
@@ -197,4 +217,10 @@ meteo_data_tm = {
     'precip_prob': tomorrow_precip,
 }
 
-print(daily_precipitation_probability_max)
+# print(daily_precipitation_probability_max)
+
+print("Скорость ветра -", int(meteo_data_td['wind']), "м/с")
+
+print(meteo_data_td["wind_direct"])
+
+print("погода сейчас", meteo_data_td["cur_temp"])

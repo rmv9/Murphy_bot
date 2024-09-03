@@ -42,7 +42,7 @@ class BaseObject:
     """Base object."""
 
 
-# FIXME: fix
+# FIXME:
 class Initializator(BaseObject):
     """Base initializator class."""
 
@@ -121,6 +121,7 @@ def init_cmd(message):
     )
 
 
+# TODO: change names of categories
 start = Menu(
     kb.menu_set['start_menu'],
     msg.START_GUIDE
@@ -160,7 +161,7 @@ def info_react(call):
     )
 
 
-# TODO:
+# FIXME: current temperature data
 def weather_react(call):
     """pass."""
     chat = call.message.chat
