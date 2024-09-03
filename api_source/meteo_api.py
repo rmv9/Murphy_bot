@@ -143,7 +143,7 @@ daily_dataframe = pd.DataFrame(data=daily_data)
 
 
 # custom functions:
-def get_wind_direction(degrees):
+def get_wind_direction(degrees) -> str:
     """Pass."""
     winddirections = (
         'северный',
@@ -161,10 +161,14 @@ def get_wind_direction(degrees):
 
 # custom points:
 current_time = (
-    datetime.fromtimestamp(current.Time()).strftime('%d-%m-%Y %H:%M')
+    datetime.fromtimestamp(current.Time()).strftime('%d.%m.%Y %H:%M')
 )
 today_date = daily_data['date'][1]
 tomorrow_date = daily_data['date'][2]
+
+# tomorrow wind
+tomorrow_wind = daily_wind_speed_10m_max[2]
+tomorrow_wind_direction = daily_wind_direction_10m_dominant[2]
 
 # temperatures
 current_temperature = int(current_temperature_2m)
@@ -200,6 +204,8 @@ tomorrow_precip = int(daily_precipitation_probability_max[2])
 # print(daily_rain_sum[1])
 # print('сейчас: ', current_temperature, '°C')
 
+
+# meteo source
 meteo_data_td = {
     'min_temp': today_temperature_min,
     'max_temp': today_temperature_max,
@@ -209,18 +215,15 @@ meteo_data_td = {
     'wind': current_wind_speed_10m,
     'wind_direct': get_wind_direction(current_wind_direction_10m),
     'humid': current_relative_humidity_2m,
+    'time': current_time,
 }
 
 meteo_data_tm = {
     'min_temp': tomorrow_temperature_min,
     'max_temp': tomorrow_temperature_max,
     'precip_prob': tomorrow_precip,
+    'wind': tomorrow_wind,
+    'wind_direct': get_wind_direction(tomorrow_wind_direction),
 }
 
-# print(daily_precipitation_probability_max)
-
-print("Скорость ветра -", int(meteo_data_td['wind']), "м/с")
-
-print(meteo_data_td["wind_direct"])
-
-print("погода сейчас", meteo_data_td["cur_temp"])
+print(meteo_data_td['time'])

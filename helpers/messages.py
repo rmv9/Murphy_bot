@@ -63,7 +63,7 @@ direct_messages = {
     ),
 }
 HELLO_SPEECH = (
-    'Меня зовут Мёрфи, я бот-помощник! ☺\n'
+    'Меня зовут Мёрфи, я бот-помощник! ☺'
 )
 INFO_SPEECH = (
     'Здесь доступна справочная информация, '
@@ -76,18 +76,23 @@ START_GUIDE = (
 
 
 # weather react
-min_max_temp = '°C ночь - день\n'
+min_max_temp = '°C ночь - день'
 
-optional_reacts = {
+wind_react = {
+    'WIND': 'Ветер',
+    'SPEED': 'м/с',
+}
+
+opt_react = {
     'RAIN': (
-        '% вероятность осадков\n'
+        '% вероятность осадков'
     ),
     'SNOW': (
-        'Возможно, сегодня пойдёт снег\n'
+        'Возможно, сегодня пойдёт снег'
     ),
 }
 temp_react = {
-    'VERY_COLD_TEMP': 'pass',
+    'VERY_COLD': 'pass',
     'COLD_TEMP': (
         'Прохладно\n'
     ),
