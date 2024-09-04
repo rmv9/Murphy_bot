@@ -169,9 +169,10 @@ def weather_react(call):
     # today_precip = mt.meteo_data_td['precip_prob']
 
     weather_data = {
-        'today': get_weather(mt.meteo_data_td),
+        'today': get_weather(mt.get_data()),
         'tomorrow': get_weather(
-            mt.meteo_data_tm, today=False
+            mt.get_data(today=False),
+            today=False
         ),
     }
     report = weather_data[call.data]
