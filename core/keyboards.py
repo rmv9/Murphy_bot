@@ -8,7 +8,7 @@ import helpers.messages as msg
 init_cmd_keyboard = types.InlineKeyboardMarkup()
 init_cmd_keyboard.row(
     types.InlineKeyboardButton(
-        text='Показать возможности',
+        text=msg.TO_MAIN,
         callback_data='start',
     ),
 )
@@ -17,21 +17,21 @@ init_cmd_keyboard.row(
 start_menu_keyboard = types.InlineKeyboardMarkup()
 start_menu_keyboard.row(
     types.InlineKeyboardButton(
-        text='Картинки',
+        text=msg.main_btns['PICS'],
         callback_data='pictures',
     ),
     types.InlineKeyboardButton(
-        text='Погода',
+        text=msg.main_btns['WEATH'],
         callback_data='weather',
     ),
 ),
 start_menu_keyboard.row(
     types.InlineKeyboardButton(
-        text='Инфо',
+        text=msg.main_btns['INFO'],
         callback_data='info',
     ),
     types.InlineKeyboardButton(
-        text='Афиша',
+        text=msg.main_btns['AFISHA'],
         callback_data='afisha',
     ),
 )
@@ -50,7 +50,7 @@ picture_keyboard.row(
 )
 picture_keyboard.row(
     types.InlineKeyboardButton(
-        text='На главную',
+        text=msg.TO_MAIN,
         callback_data='start',
     )
 )
@@ -59,23 +59,23 @@ picture_keyboard.row(
 weather_keyboard = types.InlineKeyboardMarkup()
 weather_keyboard.row(
     types.InlineKeyboardButton(
-        text=msg.weather_keys['TODAY'],
+        text=msg.weather_btns['TODAY'],
         callback_data='today'
     ),
     types.InlineKeyboardButton(
-        text=msg.weather_keys['TOMORROW'],
+        text=msg.weather_btns['TOMORROW'],
         callback_data='tomorrow'
     ),
 )
 weather_keyboard.row(
     types.InlineKeyboardButton(
-        text=msg.weather_keys['WEEK'],
+        text=msg.weather_btns['WEEK'],
         callback_data='week'
     ),
 )
 weather_keyboard.row(
     types.InlineKeyboardButton(
-        text='На главную',
+        text=msg.TO_MAIN,
         callback_data='start',
     )
 )
@@ -98,7 +98,7 @@ info_keyboard.row(
         callback_data='author'
     ),
     types.InlineKeyboardButton(
-        text=msg.start_keys['MAIN_MENU'],
+        text=msg.TO_MAIN,
         callback_data='start'
     ),
 )
@@ -107,21 +107,21 @@ info_keyboard.row(
 afisha_keyboard = types.InlineKeyboardMarkup()
 afisha_keyboard.row(
     types.InlineKeyboardButton(
-        text='Кино-Балтика',
+        text=msg.afisha_btns['BALT'],
         callback_data='cinema_balt',
     ),
     types.InlineKeyboardButton(
-        text='Кино-Отрада',
+        text=msg.afisha_btns['OTRADA'],
         callback_data='cinema_otrada',
     ),
 )
 afisha_keyboard.row(
     types.InlineKeyboardButton(
-        text='Места',
+        text=msg.afisha_btns['EVENTS'],
         callback_data='mos_afisha',
     ),
     types.InlineKeyboardButton(
-        text='На главную',
+        text=msg.TO_MAIN,
         callback_data='start',
     ),
 )
@@ -131,11 +131,11 @@ afisha_keyboard.row(
 afisha_react_keyboard = types.InlineKeyboardMarkup()
 afisha_react_keyboard.row(
     types.InlineKeyboardButton(
-        text='На главную',
+        text=msg.TO_MAIN,
         callback_data='start',
     ),
     types.InlineKeyboardButton(
-        text='Другую афишу',
+        text=msg.afisha_btns['BACK'],
         callback_data='afisha',
     ),
 )

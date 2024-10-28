@@ -121,26 +121,25 @@ def init_cmd(message):
     )
 
 
-# TODO: change names of categories
 start = Menu(
     kb.menu_set['start_menu'],
-    msg.START_GUIDE
+    msg.TO_MAIN
 )
 pics = Menu(
     kb.menu_set['pics_menu'],
-    '1000 картинок котов или собак'
+    msg.menu_brief['PICS']
 )
 afisha = Menu(
     kb.menu_set['afisha_menu'],
-    'интересует афиша?'
+    msg.menu_brief['AFISHA']
 )
 weather = Menu(
     kb.menu_set['weather_menu'],
-    'погода на какое время интересует?'
+    msg.menu_brief['WEATHER']
 )
 info = Menu(
     kb.menu_set['info_menu'],
-    msg.INFO_SPEECH
+    msg.menu_brief['INFO']
 )
 
 
@@ -175,14 +174,13 @@ def weather_react(call):
             today=False
         ),
     }
-    report = weather_data[call.data]
     # if ((today_precip <= ALLOW_PRECIP)
     #         and call.data == 'today'):
     #     report += f'\nКуда можно сходить сегодня:\n{mos_afisha}'
 
     bot_v1.send_message(
         chat.id,
-        text=report,
+        text=weather_data[call.data],
         reply_markup=keyboard,
     )
 
@@ -234,19 +232,18 @@ def get_weather(data: dict, today=True) -> str:
     report = (
         f'{min_temp} - {max_temp} '
         f'{msg.min_max_temp}\n'
-        f'{msg.wind_react['WIND']} {data['wind_direct']}, '
-        f'{int(data['wind'])} {msg.wind_react['SPEED']}\n'
-        f'{data['precip_prob']}{msg.opt_react['RAIN']}\n'
+        f'{msg.weather['WIND']} {data['wind_direct']}, '
+        f'{int(data['wind'])} {msg.weather['W_SPEED']}\n'
+        f'{data['precip_prob']}{msg.weather['RAIN']}\n'
     )
     if not today:
         return report
 
     report += (
-        f'\nСечас:\n'
-        f'{int(data['cur_temp'])} °C\n'
-        f'current time: {data['time']}\n'
-        f'Ветер {data["wind_direct"]}, {int(data['wind'])} м/с\n'
-        f'Влажность {int(data['humid'])} %\n'
-        )
-
+        f'\nСечас:\n{int(data['cur_temp'])} °C\n'
+        f':updated: {data['time']}\n'
+        f'{msg.weather['WIND']} {data["wind_direct"]}, '
+        f'{int(data['wind'])} {msg.weather['W_SPEED']}\n'
+        f'{msg.weather['HUMID']} {int(data['humid'])} %\n'
+    )
     return report
