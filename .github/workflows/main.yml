@@ -44,7 +44,7 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           source: "docker-compose.production.yml"
           target: "murphy_bot"
-          timeout: 120
+          timeout: 120s
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
