@@ -1,0 +1,6 @@
+services:
+  main:
+    container_name: main_bot
+    image: rmv9/murphy_bot:latest
+    env_file: .env
+    restart: always
