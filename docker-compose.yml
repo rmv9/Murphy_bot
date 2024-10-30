@@ -1,0 +1,6 @@
+services:
+  main:
+    container_name: main_bot
+    build: .
+    env_file: .env
+    restart: always

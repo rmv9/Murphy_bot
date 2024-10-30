@@ -25,13 +25,13 @@ afisha_list = ['mos_afisha', 'cinema_balt', 'cinema_otrada']
 
 def check_tokens():
     """pass."""
-    log.logging.info(msg.info['CHECKING_TOKENS'])
+    log.logging.info(msg.sys_info['CHECKING_TOKENS'])
     if perm.check_tokens():
         log.logging.critical(
             f'Corrupted tokens: {perm.check_tokens()}'
         )
         sys.exit()
-    log.logging.info(msg.info['END_CHECK'])
+    log.logging.info(msg.sys_info['END_CHECK'])
 
 
 def main():
