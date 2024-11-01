@@ -41,7 +41,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
-          password: ${{ secrets.SSH_PASSWORD}
+          password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           
           source: "docker-compose.production.yml"
@@ -52,7 +52,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
-          password: ${{ secrets.SSH_PASSWORD}}
+          password: ${{ secrets.SSH_PASSWORD }}
           port: 22
           
 
