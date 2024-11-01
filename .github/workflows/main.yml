@@ -57,6 +57,8 @@ jobs:
 
           script: |
             cd murphy_bot
+            sudo docker compose -f docker-compose.production.yml down
+            sudo docker image prune -af
             sudo docker compose -f docker-compose.production.yml up -d
 
   send_telegram_message:
