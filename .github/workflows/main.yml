@@ -35,17 +35,17 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: Copy docker-compose.yml via ssh
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          port: 22
+      # - name: Copy docker-compose.yml via ssh
+      #   uses: appleboy/scp-action@v0.1.4
+      #   with:
+      #     host: ${{ secrets.HOST }}
+      #     username: ${{ secrets.USER }}
+      #     key: ${{ secrets.SSH_KEY }}
+      #     passphrase: ${{ secrets.SSH_PASSPHRASE }}
+      #     port: 22
           
-          source: "docker-compose.production.yml"
-          target: "murphy_bot"
+      #     source: "docker-compose.production.yml"
+      #     target: "murphy_bot"
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
