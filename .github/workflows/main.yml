@@ -40,17 +40,15 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          password: ${{ secrets.PASSWORD }}
           source: "docker-compose.production.yml"
-          target: "~/app/murphy_bot"
+          target: "murphy_bot"
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          password: ${{ secrets.PASSWORD }}
           
 
           script: |
