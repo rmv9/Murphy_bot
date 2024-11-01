@@ -40,7 +40,10 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.SSH_PASSWORD}
+          port: 22
+          
           source: "docker-compose.production.yml"
           target: "murphy_bot"
       - name: Executing remote ssh commands to deploy
@@ -48,7 +51,9 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          password: ${{ secrets.PASSWORD }}
+          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.SSH_PASSWORD}}
+          port: 22
           
 
           script: |
