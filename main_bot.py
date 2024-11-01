@@ -37,9 +37,7 @@ def check_tokens():
 def main():
     """pass."""
     check_tokens()
-    # func.direct_initializator(CHAT_ID_DARYA)
-    # func.direct_initializator(CHAT_ID_MAX)
-    # func.direct_initializator(CHAT_ID_ALEX)
+    # func.direct_initializator(CHAT_ID_***)
 
     func.bot_v1.message_handler(commands=['start'])(func.init_cmd)
     func.bot_v1.callback_query_handler(
